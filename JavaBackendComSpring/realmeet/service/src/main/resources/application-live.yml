@@ -1,0 +1,8 @@
+# =================================
+# = Spring
+# =================================
+spring:
+  datasource:
+    url: jdbc:mysql://realmeet.cvnva5jrd2ps.us-east-2.rds.amazonaws.com/realmeet?&serverTimezone=UTC&useSSL=false
+    username: admin
+
