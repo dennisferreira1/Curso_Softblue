@@ -13,7 +13,7 @@ phases:
 
 artifacts:
   files:
-    - br.com.sw2you.realmeet.service/target/*.jar
+    - service/target/*.jar
   discard-paths: yes
 
 cache:
