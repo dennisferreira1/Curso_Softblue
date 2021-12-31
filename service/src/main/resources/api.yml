@@ -32,8 +32,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseError'
+  /rooms:
+    post:
+      summary: 'Creates a room'
+      operationId: createRoom
+      tags:
+        - room
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRoomDTO'
+        required: true
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomDTO'
+        422:
+          $ref: '#/components/responses/UnprocessableEntity'
+
 components:
   schemas:
+    CreateRoomDTO:
+      type: object
+      properties:
+        name:
+          type: string
+        seats:
+          type: integer
+
     RoomDTO:
       type: object
       properties:
@@ -44,19 +74,29 @@ components:
           type: string
         seats:
           type: integer
+
     ResponseError:
       type: object
       required:
-        - code
-        - message
+        - errorCode
+        - field
       properties:
-        code:
-          type: integer
-          format: int32
-        status:
+        field:
           type: string
-        message:
+        errorCode:
           type: string
+
+  responses:
+    UnprocessableEntity:
+      description: The server understands the content type of the request but was unable to process the contained
+        instructions.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ResponseError'
+
   securitySchemes:
     BasicAuth:
       type: http
