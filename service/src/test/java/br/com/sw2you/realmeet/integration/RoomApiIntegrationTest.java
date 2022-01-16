@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import br.com.sw2you.realmeet.api.facade.RoomApi;
 import br.com.sw2you.realmeet.core.BaseIntegrationTest;
+import br.com.sw2you.realmeet.domain.entity.Room;
 import br.com.sw2you.realmeet.domain.repository.RoomRepository;
 import br.com.sw2you.realmeet.utils.ConstantsTest;
 import br.com.sw2you.realmeet.utils.TestDataCreator;
@@ -72,5 +73,19 @@ public class RoomApiIntegrationTest extends BaseIntegrationTest {
             HttpClientErrorException.UnprocessableEntity.class,
             () -> api.createRoom(TestDataCreator.newCreateRoomDTO().name(null))
         );
+    }
+
+    @Test
+    void testDeleteRoomSuccess() {
+        var room = TestDataCreator.newRoomBuilderDefault().build();
+        var roomId = roomRepository.saveAndFlush(room).getId();
+
+        api.deleteRoom(roomId);
+        assertFalse(roomRepository.findById(roomId).orElseThrow().getActive());
+    }
+
+    @Test
+    void testDeleteRoomDoesNotExist() {
+        assertThrows(HttpClientErrorException.NotFound.class, () -> api.deleteRoom(1L));
     }
 }
