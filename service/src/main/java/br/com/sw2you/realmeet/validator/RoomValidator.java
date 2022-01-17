@@ -3,7 +3,9 @@ package br.com.sw2you.realmeet.validator;
 import static br.com.sw2you.realmeet.validator.ValidatorConstants.*;
 
 import br.com.sw2you.realmeet.api.model.CreateRoomDTO;
+import br.com.sw2you.realmeet.api.model.UpdateRoomDTO;
 import br.com.sw2you.realmeet.domain.repository.RoomRepository;
+import java.util.Objects;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,7 +23,21 @@ public class RoomValidator {
             validateName(createRoomDTO.getName(), validationErrors) &&
             validateSeats(createRoomDTO.getSeats(), validationErrors)
         ) {
-            validateNameDuplicate(createRoomDTO.getName(), validationErrors);
+            validateNameDuplicate(null, createRoomDTO.getName(), validationErrors);
+        }
+
+        ValidatorUtils.throwOnError(validationErrors);
+    }
+
+    public void validate(Long id, UpdateRoomDTO updateRoomDTO) {
+        ValidationErrors validationErrors = new ValidationErrors();
+
+        if (
+            ValidatorUtils.validateRequired(id, ROOM_ID, validationErrors) &&
+            validateName(updateRoomDTO.getName(), validationErrors) &&
+            validateSeats(updateRoomDTO.getSeats(), validationErrors)
+        ) {
+            validateNameDuplicate(id, updateRoomDTO.getName(), validationErrors);
         }
 
         ValidatorUtils.throwOnError(validationErrors);
@@ -42,9 +58,15 @@ public class RoomValidator {
         );
     }
 
-    public void validateNameDuplicate(String name, ValidationErrors validationErrors) {
+    public void validateNameDuplicate(Long id, String name, ValidationErrors validationErrors) {
         roomRepository
             .findByNameAndActive(name, true)
-            .ifPresent(__ -> validationErrors.add(ROOM_NAME, ROOM_NAME + DUPLICATE));
+            .ifPresent(
+                room -> {
+                    if (Objects.isNull(id) || !Objects.equals(id, room.getId())) {
+                        validationErrors.add(ROOM_NAME, ROOM_NAME + DUPLICATE);
+                    }
+                }
+            );
     }
 }
