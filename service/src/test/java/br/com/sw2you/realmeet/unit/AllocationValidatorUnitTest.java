@@ -216,8 +216,8 @@ class AllocationValidatorUnitTest extends BaseUnitTest {
                 victim.validate(
                     TestDataCreator
                         .newCreateAllocationDTO()
-                        .startAt(DateUtils.now())
-                        .endAt(DateUtils.now().plusSeconds(ALLOCATION_DURATION_MAX_SECONDS + 1))
+                        .startAt(DateUtils.now().plusDays(1))
+                        .endAt(DateUtils.now().plusDays(1).plusSeconds(ALLOCATION_DURATION_MAX_SECONDS + 1))
                 )
         );
         Assertions.assertEquals(1, exception.getValidationErrors().getNumberOfErrors());
