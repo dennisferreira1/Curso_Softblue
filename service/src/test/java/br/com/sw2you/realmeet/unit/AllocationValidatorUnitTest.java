@@ -52,15 +52,15 @@ class AllocationValidatorUnitTest extends BaseUnitTest {
             InvalidRequestException.class,
             () ->
                 victim.validate(
-                        TestDataCreator
-                            .newCreateAllocationDTO()
-                            .subject(
-                                StringUtils.rightPad(
-                                    ConstantsTest.DEFAULT_ALLOCATION_SUBJECT,
-                                    ALLOCATION_SUBJECT_MAX_LENGTH + 1,
-                                    'A'
-                                )
+                    TestDataCreator
+                        .newCreateAllocationDTO()
+                        .subject(
+                            StringUtils.rightPad(
+                                ConstantsTest.DEFAULT_ALLOCATION_SUBJECT,
+                                ALLOCATION_SUBJECT_MAX_LENGTH + 1,
+                                'A'
                             )
+                        )
                 )
         );
         Assertions.assertEquals(1, exception.getValidationErrors().getNumberOfErrors());
@@ -89,15 +89,15 @@ class AllocationValidatorUnitTest extends BaseUnitTest {
             InvalidRequestException.class,
             () ->
                 victim.validate(
-                        TestDataCreator
-                            .newCreateAllocationDTO()
-                            .employeeName(
-                                StringUtils.rightPad(
-                                    ConstantsTest.DEFAULT_EMPLOYEE_NAME,
-                                    ALLOCATION_EMPLOYEE_NAME_MAX_LENGTH + 1,
-                                    'A'
-                                )
+                    TestDataCreator
+                        .newCreateAllocationDTO()
+                        .employeeName(
+                            StringUtils.rightPad(
+                                ConstantsTest.DEFAULT_EMPLOYEE_NAME,
+                                ALLOCATION_EMPLOYEE_NAME_MAX_LENGTH + 1,
+                                'A'
                             )
+                        )
                 )
         );
         Assertions.assertEquals(1, exception.getValidationErrors().getNumberOfErrors());
@@ -126,15 +126,15 @@ class AllocationValidatorUnitTest extends BaseUnitTest {
             InvalidRequestException.class,
             () ->
                 victim.validate(
-                        TestDataCreator
-                            .newCreateAllocationDTO()
-                            .employeeEmail(
-                                StringUtils.rightPad(
-                                    ConstantsTest.DEFAULT_EMPLOYEE_EMAIL,
-                                    ALLOCATION_EMPLOYEE_EMAIL_MAX_LENGTH + 1,
-                                    'A'
-                                )
+                    TestDataCreator
+                        .newCreateAllocationDTO()
+                        .employeeEmail(
+                            StringUtils.rightPad(
+                                ConstantsTest.DEFAULT_EMPLOYEE_EMAIL,
+                                ALLOCATION_EMPLOYEE_EMAIL_MAX_LENGTH + 1,
+                                'A'
                             )
+                        )
                 )
         );
         Assertions.assertEquals(1, exception.getValidationErrors().getNumberOfErrors());
@@ -176,10 +176,10 @@ class AllocationValidatorUnitTest extends BaseUnitTest {
             InvalidRequestException.class,
             () ->
                 victim.validate(
-                        TestDataCreator
-                            .newCreateAllocationDTO()
-                            .startAt(DateUtils.now().plusDays(1))
-                            .endAt(DateUtils.now().plusDays(1).minusMinutes(30))
+                    TestDataCreator
+                        .newCreateAllocationDTO()
+                        .startAt(DateUtils.now().plusDays(1))
+                        .endAt(DateUtils.now().plusDays(1).minusMinutes(30))
                 )
         );
         Assertions.assertEquals(1, exception.getValidationErrors().getNumberOfErrors());
@@ -195,10 +195,10 @@ class AllocationValidatorUnitTest extends BaseUnitTest {
             InvalidRequestException.class,
             () ->
                 victim.validate(
-                        TestDataCreator
-                            .newCreateAllocationDTO()
-                            .startAt(DateUtils.now().minusHours(1))
-                            .endAt(DateUtils.now())
+                    TestDataCreator
+                        .newCreateAllocationDTO()
+                        .startAt(DateUtils.now().minusHours(1))
+                        .endAt(DateUtils.now())
                 )
         );
         Assertions.assertEquals(1, exception.getValidationErrors().getNumberOfErrors());
@@ -214,10 +214,10 @@ class AllocationValidatorUnitTest extends BaseUnitTest {
             InvalidRequestException.class,
             () ->
                 victim.validate(
-                        TestDataCreator
-                            .newCreateAllocationDTO()
-                            .startAt(DateUtils.now())
-                            .endAt(DateUtils.now().plusSeconds(ALLOCATION_DURATION_MAX_SECONDS + 1))
+                    TestDataCreator
+                        .newCreateAllocationDTO()
+                        .startAt(DateUtils.now())
+                        .endAt(DateUtils.now().plusSeconds(ALLOCATION_DURATION_MAX_SECONDS + 1))
                 )
         );
         Assertions.assertEquals(1, exception.getValidationErrors().getNumberOfErrors());
