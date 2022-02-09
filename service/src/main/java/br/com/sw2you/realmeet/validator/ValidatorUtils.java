@@ -1,6 +1,9 @@
 package br.com.sw2you.realmeet.validator;
 
 import br.com.sw2you.realmeet.exception.InvalidRequestException;
+import br.com.sw2you.realmeet.util.DateUtils;
+import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 
@@ -67,5 +70,40 @@ public final class ValidatorUtils {
             return false;
         }
         return true;
+    }
+
+    public static void validateDatesOrdering(
+        OffsetDateTime startAt,
+        OffsetDateTime endAt,
+        ValidationErrors validationErrors
+    ) {
+        if (startAt.isEqual(endAt) || startAt.isAfter(endAt)) {
+            validationErrors.add(
+                ValidatorConstants.ALLOCATION_START_AT,
+                ValidatorConstants.ALLOCATION_START_AT + ValidatorConstants.INCONSISTENT
+            );
+        }
+    }
+
+    public static void validateDateInTheFuture(OffsetDateTime startAt, ValidationErrors validationErrors) {
+        if (startAt.isBefore(DateUtils.now())) {
+            validationErrors.add(
+                ValidatorConstants.ALLOCATION_START_AT,
+                ValidatorConstants.ALLOCATION_START_AT + ValidatorConstants.IN_THE_PAST
+            );
+        }
+    }
+
+    public static void validateDurationBetweenDates(
+        OffsetDateTime startAt,
+        OffsetDateTime endAt,
+        ValidationErrors validationErrors
+    ) {
+        if (Duration.between(startAt, endAt).getSeconds() > ValidatorConstants.ALLOCATION_DURATION_MAX_SECONDS) {
+            validationErrors.add(
+                ValidatorConstants.ALLOCATION_END_AT,
+                ValidatorConstants.ALLOCATION_END_AT + ValidatorConstants.EXCEEDS_MAX_DURATION
+            );
+        }
     }
 }
