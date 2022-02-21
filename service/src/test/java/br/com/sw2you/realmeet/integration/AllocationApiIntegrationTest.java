@@ -4,7 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import br.com.sw2you.realmeet.api.facade.AllocationApi;
 import br.com.sw2you.realmeet.core.BaseIntegrationTest;
+import br.com.sw2you.realmeet.domain.repository.AllocationRepository;
 import br.com.sw2you.realmeet.domain.repository.RoomRepository;
+import br.com.sw2you.realmeet.utils.ConstantsTest;
 import br.com.sw2you.realmeet.utils.TestDataCreator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,6 +19,9 @@ public class AllocationApiIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private RoomRepository roomRepository;
+
+    @Autowired
+    private AllocationRepository allocationRepository;
 
     @Override
     protected void setupEach() throws Exception {
@@ -52,5 +57,39 @@ public class AllocationApiIntegrationTest extends BaseIntegrationTest {
             HttpClientErrorException.NotFound.class,
             () -> api.createAllocation(TestDataCreator.newCreateAllocationDTO())
         );
+    }
+
+    @Test
+    void testDeleteAllocationSuccess() {
+        var room = roomRepository.saveAndFlush(TestDataCreator.newRoomBuilderDefault().build());
+        var allocation =
+            this.allocationRepository.saveAndFlush(TestDataCreator.newAllocationBuilderDefault().room(room).build());
+        api.deleteAllocation(allocation.getId());
+
+        assertFalse(allocationRepository.findById(allocation.getId()).isPresent());
+    }
+
+    @Test
+    void testDeleteAllocationWhenCannotBeDeleted() {
+        var room = roomRepository.saveAndFlush(TestDataCreator.newRoomBuilderDefault().build());
+        var allocation =
+            this.allocationRepository.saveAndFlush(
+                    TestDataCreator
+                        .newAllocationBuilderDefault()
+                        .room(room)
+                        .startAt(ConstantsTest.DEFAULT_ALLOCATION_START_AT.minusDays(2))
+                        .endAt(ConstantsTest.DEFAULT_ALLOCATION_END_AT)
+                        .build()
+                );
+
+        assertThrows(
+            HttpClientErrorException.UnprocessableEntity.class,
+            () -> api.deleteAllocation(allocation.getId())
+        );
+    }
+
+    @Test
+    void testDeleteAllocationDoesNotExist() {
+        assertThrows(HttpClientErrorException.NotFound.class, () -> api.deleteAllocation(1L));
     }
 }
