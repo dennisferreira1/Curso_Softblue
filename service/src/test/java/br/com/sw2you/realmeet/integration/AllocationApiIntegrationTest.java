@@ -78,7 +78,7 @@ public class AllocationApiIntegrationTest extends BaseIntegrationTest {
                         .newAllocationBuilderDefault()
                         .room(room)
                         .startAt(ConstantsTest.DEFAULT_ALLOCATION_START_AT.minusDays(2))
-                        .endAt(ConstantsTest.DEFAULT_ALLOCATION_END_AT)
+                        .endAt(ConstantsTest.DEFAULT_ALLOCATION_END_AT.minusDays(2))
                         .build()
                 );
 
@@ -91,5 +91,47 @@ public class AllocationApiIntegrationTest extends BaseIntegrationTest {
     @Test
     void testDeleteAllocationDoesNotExist() {
         assertThrows(HttpClientErrorException.NotFound.class, () -> api.deleteAllocation(1L));
+    }
+
+    @Test
+    void testUpdateAllocationSuccess() {
+        var room = roomRepository.saveAndFlush(TestDataCreator.newRoomBuilderDefault().build());
+        var createAllocationDTO = TestDataCreator.newCreateAllocationDTO().roomId(room.getId());
+        var allocationDTO = api.createAllocation(createAllocationDTO);
+
+        var updateAllocationDTO = TestDataCreator
+            .newUpdateAllocationDTO()
+            .subject(allocationDTO.getSubject() + "_")
+            .startAt(allocationDTO.getStartAt().plusDays(1))
+            .endAt(allocationDTO.getEndAt().plusDays(1));
+
+        api.updateAllocation(allocationDTO.getId(), updateAllocationDTO);
+
+        var updatedAllocation = allocationRepository.findById(allocationDTO.getId()).orElseThrow();
+
+        assertEquals(updateAllocationDTO.getSubject(), updatedAllocation.getSubject());
+        assertTrue(updateAllocationDTO.getStartAt().isEqual(updatedAllocation.getStartAt()));
+        assertTrue(updateAllocationDTO.getEndAt().isEqual(updatedAllocation.getEndAt()));
+    }
+
+    @Test
+    void testUpdateAllocationDoesNotExist() {
+        assertThrows(
+            HttpClientErrorException.NotFound.class,
+            () -> api.updateAllocation(1L, TestDataCreator.newUpdateAllocationDTO())
+        );
+    }
+
+    @Test
+    void testUpdateAllocationValidationError() {
+        var room = roomRepository.saveAndFlush(TestDataCreator.newRoomBuilderDefault().build());
+        var allocation = allocationRepository.saveAndFlush(
+            TestDataCreator.newAllocationBuilderDefault().room(room).build()
+        );
+
+        assertThrows(
+            HttpClientErrorException.UnprocessableEntity.class,
+            () -> api.updateAllocation(allocation.getId(), TestDataCreator.newUpdateAllocationDTO().subject(null))
+        );
     }
 }

@@ -3,6 +3,7 @@ package br.com.sw2you.realmeet.validator;
 import static br.com.sw2you.realmeet.validator.ValidatorConstants.*;
 
 import br.com.sw2you.realmeet.api.model.CreateAllocationDTO;
+import br.com.sw2you.realmeet.api.model.UpdateAllocationDTO;
 import br.com.sw2you.realmeet.domain.repository.AllocationRepository;
 import java.time.OffsetDateTime;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,17 @@ public class AllocationValidator {
         validateEmployeeName(createAllocationDTO.getEmployeeName(), validationErrors);
         validateEmployeeEmail(createAllocationDTO.getEmployeeEmail(), validationErrors);
         validateDates(createAllocationDTO.getStartAt(), createAllocationDTO.getEndAt(), validationErrors);
+
+        ValidatorUtils.throwOnError(validationErrors);
+    }
+
+    public void validate(Long id, UpdateAllocationDTO updateAllocationDTO) {
+        ValidationErrors validationErrors = new ValidationErrors();
+
+        if (ValidatorUtils.validateRequired(id, ALLOCATION_ID, validationErrors)) {
+            validateSubject(updateAllocationDTO.getSubject(), validationErrors);
+            validateDates(updateAllocationDTO.getStartAt(), updateAllocationDTO.getEndAt(), validationErrors);
+        }
 
         ValidatorUtils.throwOnError(validationErrors);
     }

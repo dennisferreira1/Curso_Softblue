@@ -7,7 +7,7 @@ servers:
 paths:
   /rooms/{id}:
     get:
-      summary: 'Return a room by ID'
+      summary: 'Return an room by ID'
       operationId: getRoom
       tags:
         - room
@@ -30,7 +30,7 @@ paths:
           description: NOT FOUND
 
     put:
-      summary: 'update a room by ID'
+      summary: 'Update an room by ID'
       operationId: updateRoom
       tags:
         - room
@@ -50,14 +50,14 @@ paths:
         required: true
       responses:
         '204':
-          description: 'updated successfully'
+          description: 'UPDATED SUCCESSFULLY'
         404:
           description: NOT FOUND
         422:
           $ref: '#/components/responses/UnprocessableEntity'
 
     delete:
-      summary: 'delete a room by ID'
+      summary: 'Delete an room by ID'
       operationId: deleteRoom
       tags:
         - room
@@ -71,13 +71,13 @@ paths:
             format: int64
       responses:
         '204':
-          description: 'Deleted successfully'
+          description: 'DELETED SUCCESSFULLY'
         404:
           description: NOT FOUND
 
   /rooms:
     post:
-      summary: 'Creates a room'
+      summary: 'Create an room'
       operationId: createRoom
       tags:
         - room
@@ -89,7 +89,7 @@ paths:
         required: true
       responses:
         201:
-          description: Created
+          description: CREATED
           content:
             application/json:
               schema:
@@ -99,7 +99,7 @@ paths:
 
   /allocations:
     post:
-      summary: 'Creates an allocation'
+      summary: 'Create an allocation'
       operationId: createAllocation
       tags:
         - allocation
@@ -111,7 +111,7 @@ paths:
         required: true
       responses:
         201:
-          description: Created
+          description: CREATED
           content:
             application/json:
               schema:
@@ -122,8 +122,35 @@ paths:
           description: NOT FOUND
 
   /allocations/{id}:
+    put:
+      summary: 'Update an allocation by ID'
+      operationId: updateAllocation
+      tags:
+        - allocation
+      parameters:
+        - name: id
+          in: path
+          description: ID of the allocation
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAllocationDTO'
+        required: true
+      responses:
+        '204':
+          description: 'UPDATED SUCCESSFULLY'
+        404:
+          description: NOT FOUND
+        422:
+          $ref: '#/components/responses/UnprocessableEntity'
+
     delete:
-      summary: 'delete an allocation by ID'
+      summary: 'Delete an allocation by ID'
       operationId: deleteAllocation
       tags:
         - allocation
@@ -137,7 +164,7 @@ paths:
             format: int64
       responses:
         '204':
-          description: 'Deleted successfully'
+          description: 'DELETED SUCCESSFULLY'
         404:
           description: NOT FOUND
         422:
@@ -169,12 +196,9 @@ components:
         seats:
           type: integer
 
-    CreateAllocationDTO:
+    UpdateAllocationDTO:
       type: object
       properties:
-        roomId:
-          type: integer
-          format: int64
         subject:
           type: string
         startAt:
@@ -183,10 +207,20 @@ components:
         endAt:
           type: string
           format: date-time
-        employeeName:
-          type: string
-        employeeEmail:
-          type: string
+
+    CreateAllocationDTO:
+      type: object
+      allOf:
+       - $ref: '#/components/schemas/UpdateAllocationDTO'
+       - type: object
+         properties:
+           roomId:
+             type: integer
+             format: int64
+           employeeName:
+             type: string
+           employeeEmail:
+             type: string
 
     AllocationDTO:
       type: object
