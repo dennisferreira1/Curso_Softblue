@@ -5,15 +5,23 @@ import static br.com.sw2you.realmeet.validator.ValidatorConstants.*;
 import br.com.sw2you.realmeet.core.BaseUnitTest;
 import br.com.sw2you.realmeet.domain.repository.AllocationRepository;
 import br.com.sw2you.realmeet.exception.InvalidRequestException;
+import br.com.sw2you.realmeet.util.Constants;
 import br.com.sw2you.realmeet.util.DateUtils;
 import br.com.sw2you.realmeet.utils.ConstantsTest;
 import br.com.sw2you.realmeet.utils.TestDataCreator;
 import br.com.sw2you.realmeet.validator.AllocationValidator;
 import br.com.sw2you.realmeet.validator.ValidationError;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
 import org.mockito.Mock;
 
 class AllocationCreateValidatorUnitTest extends BaseUnitTest {
@@ -224,5 +232,63 @@ class AllocationCreateValidatorUnitTest extends BaseUnitTest {
             new ValidationError(ALLOCATION_END_AT, ALLOCATION_END_AT + EXCEEDS_MAX_DURATION),
             exception.getValidationErrors().getError(0)
         );
+    }
+
+    @Test
+    void testValidateWhenDatesIntervalIsValid() {
+        Assertions.assertTrue(
+            existeConflitoDeDatas(criarDataAmanha(4), criarDataAmanha(6), criarDataAmanha(2), criarDataAmanha(3))
+        );
+        Assertions.assertTrue(
+            existeConflitoDeDatas(criarDataAmanha(2), criarDataAmanha(3), criarDataAmanha(4), criarDataAmanha(5))
+        );
+        Assertions.assertTrue(
+            existeConflitoDeDatas(criarDataAmanha(4), criarDataAmanha(6), criarDataAmanha(2), criarDataAmanha(3))
+        );
+    }
+
+    @Test
+    void testValidateWhenDatesIntervalIsInvalid() {
+        Assertions.assertFalse(
+            existeConflitoDeDatas(criarDataAmanha(4), criarDataAmanha(6), criarDataAmanha(3), criarDataAmanha(5))
+        );
+        Assertions.assertFalse(
+            existeConflitoDeDatas(criarDataAmanha(2), criarDataAmanha(3), criarDataAmanha(2), criarDataAmanha(3))
+        );
+        Assertions.assertFalse(
+            existeConflitoDeDatas(criarDataAmanha(4), criarDataAmanha(6), criarDataAmanha(5), criarDataAmanha(7))
+        );
+    }
+
+    private OffsetDateTime criarDataAmanha(int hora) {
+        return OffsetDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(hora, 0), DateUtils.DEFAULT_TIMEZONE);
+    }
+
+    private boolean existeConflitoDeDatas(
+        OffsetDateTime startReservada,
+        OffsetDateTime endReservada,
+        OffsetDateTime startNovaAlocacao,
+        OffsetDateTime endNovaAlocacao
+    ) {
+        BDDMockito
+            .given(
+                allocationRepository.findAllWithFilters(
+                    ArgumentMatchers.any(),
+                    ArgumentMatchers.any(),
+                    ArgumentMatchers.any(),
+                    ArgumentMatchers.any()
+                )
+            )
+            .willReturn(
+                List.of(
+                    TestDataCreator.newAllocationBuilderDefault().startAt(startReservada).endAt(endReservada).build()
+                )
+            );
+        try {
+            victim.validate(TestDataCreator.newCreateAllocationDTO().startAt(startNovaAlocacao).endAt(endNovaAlocacao));
+            return true;
+        } catch (InvalidRequestException e) {
+            return false;
+        }
     }
 }

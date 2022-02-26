@@ -5,7 +5,10 @@ import static br.com.sw2you.realmeet.validator.ValidatorConstants.*;
 import br.com.sw2you.realmeet.api.model.CreateAllocationDTO;
 import br.com.sw2you.realmeet.api.model.UpdateAllocationDTO;
 import br.com.sw2you.realmeet.domain.repository.AllocationRepository;
+import br.com.sw2you.realmeet.util.DateUtils;
+import br.com.sw2you.realmeet.util.PageUtils;
 import java.time.OffsetDateTime;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,17 +25,22 @@ public class AllocationValidator {
         validateSubject(createAllocationDTO.getSubject(), validationErrors);
         validateEmployeeName(createAllocationDTO.getEmployeeName(), validationErrors);
         validateEmployeeEmail(createAllocationDTO.getEmployeeEmail(), validationErrors);
-        validateDates(createAllocationDTO.getStartAt(), createAllocationDTO.getEndAt(), validationErrors);
+        validateDates(
+            createAllocationDTO.getRoomId(),
+            createAllocationDTO.getStartAt(),
+            createAllocationDTO.getEndAt(),
+            validationErrors
+        );
 
         ValidatorUtils.throwOnError(validationErrors);
     }
 
-    public void validate(Long id, UpdateAllocationDTO updateAllocationDTO) {
+    public void validate(Long allocationId, Long roomId, UpdateAllocationDTO updateAllocationDTO) {
         ValidationErrors validationErrors = new ValidationErrors();
 
-        if (ValidatorUtils.validateRequired(id, ALLOCATION_ID, validationErrors)) {
+        if (ValidatorUtils.validateRequired(allocationId, ALLOCATION_ID, validationErrors)) {
             validateSubject(updateAllocationDTO.getSubject(), validationErrors);
-            validateDates(updateAllocationDTO.getStartAt(), updateAllocationDTO.getEndAt(), validationErrors);
+            validateDates(roomId, updateAllocationDTO.getStartAt(), updateAllocationDTO.getEndAt(), validationErrors);
         }
 
         ValidatorUtils.throwOnError(validationErrors);
@@ -63,12 +71,17 @@ public class AllocationValidator {
         );
     }
 
-    private void validateDates(OffsetDateTime startAt, OffsetDateTime endAt, ValidationErrors validationErrors) {
+    private void validateDates(
+        Long roomId,
+        OffsetDateTime startAt,
+        OffsetDateTime endAt,
+        ValidationErrors validationErrors
+    ) {
         if (validateDatesPresent(startAt, endAt, validationErrors)) {
             ValidatorUtils.validateDatesOrdering(startAt, endAt, validationErrors);
             ValidatorUtils.validateDateInTheFuture(startAt, validationErrors);
             ValidatorUtils.validateDurationBetweenDates(startAt, endAt, validationErrors);
-            validateIfTimeAvailable(startAt, endAt, validationErrors);
+            validateIfTimeAvailable(roomId, startAt, endAt, validationErrors);
         }
     }
 
@@ -83,11 +96,18 @@ public class AllocationValidator {
         );
     }
 
-    public static void validateIfTimeAvailable(
+    private void validateIfTimeAvailable(
+        Long roomId,
         OffsetDateTime startAt,
         OffsetDateTime endAt,
         ValidationErrors validationErrors
     ) {
-        //TODO
+        var allocations = this.allocationRepository.findAllWithFilters(null, roomId, DateUtils.now(), endAt);
+
+        allocations
+            .stream()
+            .filter(a -> DateUtils.isOverlapping(startAt, endAt, a.getStartAt(), a.getEndAt()))
+            .findFirst()
+            .ifPresent(__ -> validationErrors.add(ALLOCATION_DATES, ALLOCATION_DATES + OVERLAPPING));
     }
 }

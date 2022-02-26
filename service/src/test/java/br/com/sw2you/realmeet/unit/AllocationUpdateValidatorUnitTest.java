@@ -29,14 +29,18 @@ class AllocationUpdateValidatorUnitTest extends BaseUnitTest {
 
     @Test
     void testValidateWhenAllocationIsValid() {
-        victim.validate(ConstantsTest.DEFAULT_ALLOCATION_ID, TestDataCreator.newUpdateAllocationDTO());
+        victim.validate(
+            ConstantsTest.DEFAULT_ALLOCATION_ID,
+            ConstantsTest.DEFAULT_ROOM_ID,
+            TestDataCreator.newUpdateAllocationDTO()
+        );
     }
 
     @Test
     void testValidateWhenIdIsMissing() {
         var exception = Assertions.assertThrows(
             InvalidRequestException.class,
-            () -> victim.validate(null, TestDataCreator.newUpdateAllocationDTO())
+            () -> victim.validate(null, null, TestDataCreator.newUpdateAllocationDTO())
         );
         Assertions.assertEquals(1, exception.getValidationErrors().getNumberOfErrors());
         Assertions.assertEquals(
@@ -52,6 +56,7 @@ class AllocationUpdateValidatorUnitTest extends BaseUnitTest {
             () ->
                 victim.validate(
                     ConstantsTest.DEFAULT_ALLOCATION_ID,
+                    ConstantsTest.DEFAULT_ROOM_ID,
                     TestDataCreator.newUpdateAllocationDTO().subject(null)
                 )
         );
@@ -69,6 +74,7 @@ class AllocationUpdateValidatorUnitTest extends BaseUnitTest {
             () ->
                 victim.validate(
                     ConstantsTest.DEFAULT_ALLOCATION_ID,
+                    ConstantsTest.DEFAULT_ROOM_ID,
                     TestDataCreator
                         .newUpdateAllocationDTO()
                         .subject(
@@ -94,6 +100,7 @@ class AllocationUpdateValidatorUnitTest extends BaseUnitTest {
             () ->
                 victim.validate(
                     ConstantsTest.DEFAULT_ALLOCATION_ID,
+                    ConstantsTest.DEFAULT_ROOM_ID,
                     TestDataCreator.newUpdateAllocationDTO().startAt(null)
                 )
         );
@@ -111,6 +118,7 @@ class AllocationUpdateValidatorUnitTest extends BaseUnitTest {
             () ->
                 victim.validate(
                     ConstantsTest.DEFAULT_ALLOCATION_ID,
+                    ConstantsTest.DEFAULT_ROOM_ID,
                     TestDataCreator.newUpdateAllocationDTO().endAt(null)
                 )
         );
@@ -128,6 +136,7 @@ class AllocationUpdateValidatorUnitTest extends BaseUnitTest {
             () ->
                 victim.validate(
                     ConstantsTest.DEFAULT_ALLOCATION_ID,
+                    ConstantsTest.DEFAULT_ROOM_ID,
                     TestDataCreator
                         .newUpdateAllocationDTO()
                         .startAt(DateUtils.now().plusDays(1))
@@ -148,6 +157,7 @@ class AllocationUpdateValidatorUnitTest extends BaseUnitTest {
             () ->
                 victim.validate(
                     ConstantsTest.DEFAULT_ALLOCATION_ID,
+                    ConstantsTest.DEFAULT_ROOM_ID,
                     TestDataCreator
                         .newUpdateAllocationDTO()
                         .startAt(DateUtils.now().minusHours(1))
@@ -168,6 +178,7 @@ class AllocationUpdateValidatorUnitTest extends BaseUnitTest {
             () ->
                 victim.validate(
                     ConstantsTest.DEFAULT_ALLOCATION_ID,
+                    ConstantsTest.DEFAULT_ROOM_ID,
                     TestDataCreator
                         .newUpdateAllocationDTO()
                         .startAt(DateUtils.now().plusDays(1))

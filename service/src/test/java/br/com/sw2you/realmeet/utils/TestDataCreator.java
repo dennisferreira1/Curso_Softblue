@@ -28,11 +28,11 @@ public final class TestDataCreator {
             .subject(DEFAULT_ALLOCATION_SUBJECT)
             .startAt(DEFAULT_ALLOCATION_START_AT)
             .endAt(DEFAULT_ALLOCATION_END_AT)
-            .employee(newEmployeeBuilderDefault());
+            .employee(newEmployeeBuilderDefault().build());
     }
 
-    private static Employee newEmployeeBuilderDefault() {
-        return Employee.newEmployeeBuilder().name(DEFAULT_EMPLOYEE_NAME).email(DEFAULT_EMPLOYEE_EMAIL).build();
+    public static Employee.EmployeeBuilder newEmployeeBuilderDefault() {
+        return Employee.newEmployeeBuilder().name(DEFAULT_EMPLOYEE_NAME).email(DEFAULT_EMPLOYEE_EMAIL);
     }
 
     public static CreateAllocationDTO newCreateAllocationDTO() {
