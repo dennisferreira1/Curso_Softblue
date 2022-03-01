@@ -34,7 +34,7 @@ public class RoomApiIntegrationTest extends BaseIntegrationTest {
         Assertions.assertNotNull(room.getId());
         Assertions.assertTrue(room.getActive());
 
-        var roomDto = api.getRoom(ConstantsTest.DEFAULT_ROOM_ID);
+        var roomDto = api.getRoom(ConstantsTest.TEST_CLIENT_API_KEY, ConstantsTest.DEFAULT_ROOM_ID);
 
         assertEquals(room.getId(), roomDto.getId());
         assertEquals(room.getName(), roomDto.getName());
@@ -46,18 +46,24 @@ public class RoomApiIntegrationTest extends BaseIntegrationTest {
         var room = TestDataCreator.newRoomBuilderDefault().active(false).build();
         roomRepository.saveAndFlush(room);
         assertFalse(room.getActive());
-        assertThrows(HttpClientErrorException.NotFound.class, () -> api.getRoom(room.getId()));
+        assertThrows(
+            HttpClientErrorException.NotFound.class,
+            () -> api.getRoom(ConstantsTest.TEST_CLIENT_API_KEY, room.getId())
+        );
     }
 
     @Test
     void testGetRoomNotExist() {
-        assertThrows(HttpClientErrorException.NotFound.class, () -> api.getRoom(ConstantsTest.DEFAULT_ROOM_ID));
+        assertThrows(
+            HttpClientErrorException.NotFound.class,
+            () -> api.getRoom(ConstantsTest.TEST_CLIENT_API_KEY, ConstantsTest.DEFAULT_ROOM_ID)
+        );
     }
 
     @Test
     void testCreateRoomSuccess() {
         var createRoomDTO = TestDataCreator.newCreateRoomDTO();
-        var roomDTO = api.createRoom(createRoomDTO);
+        var roomDTO = api.createRoom(ConstantsTest.TEST_CLIENT_API_KEY, createRoomDTO);
 
         assertEquals(createRoomDTO.getName(), roomDTO.getName());
         assertEquals(createRoomDTO.getSeats(), roomDTO.getSeats());
@@ -72,7 +78,11 @@ public class RoomApiIntegrationTest extends BaseIntegrationTest {
     void testCreateRoomValidationError() {
         assertThrows(
             HttpClientErrorException.UnprocessableEntity.class,
-            () -> api.createRoom((CreateRoomDTO) TestDataCreator.newCreateRoomDTO().name(null))
+            () ->
+                api.createRoom(
+                    ConstantsTest.TEST_CLIENT_API_KEY,
+                    (CreateRoomDTO) TestDataCreator.newCreateRoomDTO().name(null)
+                )
         );
     }
 
@@ -81,13 +91,16 @@ public class RoomApiIntegrationTest extends BaseIntegrationTest {
         var room = TestDataCreator.newRoomBuilderDefault().build();
         var roomId = roomRepository.saveAndFlush(room).getId();
 
-        api.deleteRoom(roomId);
+        api.deleteRoom(ConstantsTest.TEST_CLIENT_API_KEY, roomId);
         assertFalse(roomRepository.findById(roomId).orElseThrow().getActive());
     }
 
     @Test
     void testDeleteRoomDoesNotExist() {
-        assertThrows(HttpClientErrorException.NotFound.class, () -> api.deleteRoom(1L));
+        assertThrows(
+            HttpClientErrorException.NotFound.class,
+            () -> api.deleteRoom(ConstantsTest.TEST_CLIENT_API_KEY, 1L)
+        );
     }
 
     @Test
@@ -95,7 +108,7 @@ public class RoomApiIntegrationTest extends BaseIntegrationTest {
         var room = roomRepository.saveAndFlush(TestDataCreator.newRoomBuilderDefault().build());
         var updateRoomDTO = new UpdateRoomDTO().name(room.getName() + "_").seats(room.getSeats() + 1);
 
-        api.updateRoom(room.getId(), updateRoomDTO);
+        api.updateRoom(ConstantsTest.TEST_CLIENT_API_KEY, room.getId(), updateRoomDTO);
         var updatedRoom = roomRepository.findById(room.getId()).orElseThrow();
 
         assertEquals(updateRoomDTO.getName(), updatedRoom.getName());
@@ -106,7 +119,7 @@ public class RoomApiIntegrationTest extends BaseIntegrationTest {
     void testUpdateRoomDoesNotExist() {
         assertThrows(
             HttpClientErrorException.NotFound.class,
-            () -> api.updateRoom(1L, new UpdateRoomDTO().name("Room").seats(10))
+            () -> api.updateRoom(ConstantsTest.TEST_CLIENT_API_KEY, 1L, new UpdateRoomDTO().name("Room").seats(10))
         );
     }
 
@@ -116,7 +129,12 @@ public class RoomApiIntegrationTest extends BaseIntegrationTest {
 
         assertThrows(
             HttpClientErrorException.UnprocessableEntity.class,
-            () -> api.updateRoom(room.getId(), new UpdateRoomDTO().name(null).seats(10))
+            () ->
+                api.updateRoom(
+                    ConstantsTest.TEST_CLIENT_API_KEY,
+                    room.getId(),
+                    new UpdateRoomDTO().name(null).seats(10)
+                )
         );
     }
 }

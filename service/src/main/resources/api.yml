@@ -12,6 +12,7 @@ paths:
       tags:
         - room
       parameters:
+        - $ref: '#/components/parameters/apiKey'
         - name: id
           in: path
           description: ID of the room
@@ -19,6 +20,7 @@ paths:
           schema:
             type: integer
             format: int64
+
       responses:
         '200':
           description: 'OK'
@@ -35,6 +37,7 @@ paths:
       tags:
         - room
       parameters:
+        - $ref: '#/components/parameters/apiKey'
         - name: id
           in: path
           description: ID of the room
@@ -62,6 +65,7 @@ paths:
       tags:
         - room
       parameters:
+        - $ref: '#/components/parameters/apiKey'
         - name: id
           in: path
           description: ID of the room
@@ -81,6 +85,8 @@ paths:
       operationId: createRoom
       tags:
         - room
+      parameters:
+        - $ref: '#/components/parameters/apiKey'
       requestBody:
         content:
           application/json:
@@ -104,6 +110,7 @@ paths:
       tags:
         - allocation
       parameters:
+        - $ref: '#/components/parameters/apiKey'
         - name: employeeEmail
           in: query
           description: Email of the employee
@@ -146,6 +153,8 @@ paths:
       operationId: createAllocation
       tags:
         - allocation
+      parameters:
+        - $ref: '#/components/parameters/apiKey'
       requestBody:
         content:
           application/json:
@@ -171,6 +180,7 @@ paths:
       tags:
         - allocation
       parameters:
+        - $ref: '#/components/parameters/apiKey'
         - name: id
           in: path
           description: ID of the allocation
@@ -198,6 +208,7 @@ paths:
       tags:
         - allocation
       parameters:
+        - $ref: '#/components/parameters/apiKey'
         - name: id
           in: path
           description: ID of the allocation
@@ -318,6 +329,13 @@ components:
       schema:
         type: integer
 
+    apiKey:
+      name: api-key
+      in: header
+      description: The API key to authenticate the request
+      required: true
+      schema:
+        type: string
 
   securitySchemes:
     BasicAuth:

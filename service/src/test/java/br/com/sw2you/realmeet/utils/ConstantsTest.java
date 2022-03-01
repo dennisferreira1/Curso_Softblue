@@ -17,5 +17,9 @@ public final class ConstantsTest {
     public static final OffsetDateTime DEFAULT_ALLOCATION_START_AT = DateUtils.now().plusDays(1);
     public static final OffsetDateTime DEFAULT_ALLOCATION_END_AT = DEFAULT_ALLOCATION_START_AT.plusHours(1);
 
+    //API-KEY
+    public static final String TEST_CLIENT_API_KEY = "test-api-key";
+    public static final String TEST_CLIENT_DESCRIPTION = "some test client";
+
     private ConstantsTest() {}
 }

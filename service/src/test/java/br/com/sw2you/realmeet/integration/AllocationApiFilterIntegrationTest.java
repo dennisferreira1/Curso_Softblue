@@ -49,7 +49,16 @@ public class AllocationApiFilterIntegrationTest extends BaseIntegrationTest {
             TestDataCreator.newAllocationBuilderDefault().room(room).subject("Allocation 3").build()
         );
 
-        var allocationsDTO = api.listAllocations(null, null, null, null, null, null, null);
+        var allocationsDTO = api.listAllocations(
+            ConstantsTest.TEST_CLIENT_API_KEY,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
 
         Assertions.assertEquals(3, allocationsDTO.size());
         Assertions.assertEquals(allocation1.getId(), allocationsDTO.get(0).getId());
@@ -71,7 +80,16 @@ public class AllocationApiFilterIntegrationTest extends BaseIntegrationTest {
             TestDataCreator.newAllocationBuilderDefault().room(roomB).subject("Allocation 3").build()
         );
 
-        var allocationsDTO = api.listAllocations(null, roomA.getId(), null, null, null, null, null);
+        var allocationsDTO = api.listAllocations(
+            ConstantsTest.TEST_CLIENT_API_KEY,
+            null,
+            roomA.getId(),
+            null,
+            null,
+            null,
+            null,
+            null
+        );
 
         Assertions.assertEquals(2, allocationsDTO.size());
         Assertions.assertEquals(allocation1.getId(), allocationsDTO.get(0).getId());
@@ -113,7 +131,16 @@ public class AllocationApiFilterIntegrationTest extends BaseIntegrationTest {
                 .build()
         );
 
-        var allocationsDTO = api.listAllocations(employee1.getEmail(), null, null, null, null, null, null);
+        var allocationsDTO = api.listAllocations(
+            ConstantsTest.TEST_CLIENT_API_KEY,
+            employee1.getEmail(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
 
         Assertions.assertEquals(2, allocationsDTO.size());
         Assertions.assertEquals(allocation1.getEmployee().getEmail(), allocationsDTO.get(0).getEmployeeEmail());
@@ -156,6 +183,7 @@ public class AllocationApiFilterIntegrationTest extends BaseIntegrationTest {
         );
 
         var allocationsDTO = api.listAllocations(
+            ConstantsTest.TEST_CLIENT_API_KEY,
             null,
             null,
             baseStartAt.toLocalDate(),
@@ -175,8 +203,26 @@ public class AllocationApiFilterIntegrationTest extends BaseIntegrationTest {
         persistAllocations(15);
         ReflectionTestUtils.setField(allocationService, "maxLimit", 10);
 
-        var allocationsDTOPage1 = api.listAllocations(null, null, null, null, null, null, 0);
-        var allocationsDTOPage2 = api.listAllocations(null, null, null, null, null, null, 1);
+        var allocationsDTOPage1 = api.listAllocations(
+            ConstantsTest.TEST_CLIENT_API_KEY,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            0
+        );
+        var allocationsDTOPage2 = api.listAllocations(
+            ConstantsTest.TEST_CLIENT_API_KEY,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            1
+        );
 
         Assertions.assertEquals(10, allocationsDTOPage1.size());
         Assertions.assertEquals(5, allocationsDTOPage2.size());
@@ -187,9 +233,36 @@ public class AllocationApiFilterIntegrationTest extends BaseIntegrationTest {
         persistAllocations(25);
         ReflectionTestUtils.setField(allocationService, "maxLimit", 50);
 
-        var allocationsDTOPage1 = api.listAllocations(null, null, null, null, null, 10, 0);
-        var allocationsDTOPage2 = api.listAllocations(null, null, null, null, null, 10, 1);
-        var allocationsDTOPage3 = api.listAllocations(null, null, null, null, null, 10, 2);
+        var allocationsDTOPage1 = api.listAllocations(
+            ConstantsTest.TEST_CLIENT_API_KEY,
+            null,
+            null,
+            null,
+            null,
+            null,
+            10,
+            0
+        );
+        var allocationsDTOPage2 = api.listAllocations(
+            ConstantsTest.TEST_CLIENT_API_KEY,
+            null,
+            null,
+            null,
+            null,
+            null,
+            10,
+            1
+        );
+        var allocationsDTOPage3 = api.listAllocations(
+            ConstantsTest.TEST_CLIENT_API_KEY,
+            null,
+            null,
+            null,
+            null,
+            null,
+            10,
+            2
+        );
 
         Assertions.assertEquals(10, allocationsDTOPage1.size());
         Assertions.assertEquals(10, allocationsDTOPage2.size());
@@ -199,7 +272,16 @@ public class AllocationApiFilterIntegrationTest extends BaseIntegrationTest {
     @Test
     void testFilterAllAllocationsOrderByStartAtDesc() {
         var allocationsList = persistAllocations(3);
-        var allocationsDTOList = api.listAllocations(null, null, null, null, "-startAt", null, null);
+        var allocationsDTOList = api.listAllocations(
+            ConstantsTest.TEST_CLIENT_API_KEY,
+            null,
+            null,
+            null,
+            null,
+            "-startAt",
+            null,
+            null
+        );
 
         Assertions.assertEquals(3, allocationsDTOList.size());
         Assertions.assertEquals(allocationsList.get(0).getId(), allocationsDTOList.get(2).getId());
@@ -211,7 +293,7 @@ public class AllocationApiFilterIntegrationTest extends BaseIntegrationTest {
     void testFilterAllAllocationsOrderByFieldInvalid() {
         Assertions.assertThrows(
             HttpClientErrorException.UnprocessableEntity.class,
-            () -> api.listAllocations(null, null, null, null, "invalid", null, null)
+            () -> api.listAllocations(ConstantsTest.TEST_CLIENT_API_KEY, null, null, null, null, "invalid", null, null)
         );
     }
 

@@ -32,7 +32,7 @@ public class AllocationApiIntegrationTest extends BaseIntegrationTest {
     void testCreateAllocationSuccess() {
         var room = roomRepository.saveAndFlush(TestDataCreator.newRoomBuilderDefault().build());
         var createAllocationDTO = TestDataCreator.newCreateAllocationDTO().roomId(room.getId());
-        var allocationDTO = api.createAllocation(createAllocationDTO);
+        var allocationDTO = api.createAllocation(ConstantsTest.TEST_CLIENT_API_KEY, createAllocationDTO);
 
         Assertions.assertNotNull(allocationDTO.getId());
         assertEquals(room.getId(), allocationDTO.getRoomId());
@@ -48,14 +48,17 @@ public class AllocationApiIntegrationTest extends BaseIntegrationTest {
         var room = roomRepository.saveAndFlush(TestDataCreator.newRoomBuilderDefault().build());
         var allocationDTO = TestDataCreator.newCreateAllocationDTO().roomId(room.getId()).subject(null);
 
-        assertThrows(HttpClientErrorException.UnprocessableEntity.class, () -> api.createAllocation(allocationDTO));
+        assertThrows(
+            HttpClientErrorException.UnprocessableEntity.class,
+            () -> api.createAllocation(ConstantsTest.TEST_CLIENT_API_KEY, allocationDTO)
+        );
     }
 
     @Test
     void testCreateAllocationWhenRoomDoesNotExist() {
         assertThrows(
             HttpClientErrorException.NotFound.class,
-            () -> api.createAllocation(TestDataCreator.newCreateAllocationDTO())
+            () -> api.createAllocation(ConstantsTest.TEST_CLIENT_API_KEY, TestDataCreator.newCreateAllocationDTO())
         );
     }
 
@@ -64,7 +67,7 @@ public class AllocationApiIntegrationTest extends BaseIntegrationTest {
         var room = roomRepository.saveAndFlush(TestDataCreator.newRoomBuilderDefault().build());
         var allocation =
             this.allocationRepository.saveAndFlush(TestDataCreator.newAllocationBuilderDefault().room(room).build());
-        api.deleteAllocation(allocation.getId());
+        api.deleteAllocation(ConstantsTest.TEST_CLIENT_API_KEY, allocation.getId());
 
         assertFalse(allocationRepository.findById(allocation.getId()).isPresent());
     }
@@ -84,20 +87,23 @@ public class AllocationApiIntegrationTest extends BaseIntegrationTest {
 
         assertThrows(
             HttpClientErrorException.UnprocessableEntity.class,
-            () -> api.deleteAllocation(allocation.getId())
+            () -> api.deleteAllocation(ConstantsTest.TEST_CLIENT_API_KEY, allocation.getId())
         );
     }
 
     @Test
     void testDeleteAllocationDoesNotExist() {
-        assertThrows(HttpClientErrorException.NotFound.class, () -> api.deleteAllocation(1L));
+        assertThrows(
+            HttpClientErrorException.NotFound.class,
+            () -> api.deleteAllocation(ConstantsTest.TEST_CLIENT_API_KEY, 1L)
+        );
     }
 
     @Test
     void testUpdateAllocationSuccess() {
         var room = roomRepository.saveAndFlush(TestDataCreator.newRoomBuilderDefault().build());
         var createAllocationDTO = TestDataCreator.newCreateAllocationDTO().roomId(room.getId());
-        var allocationDTO = api.createAllocation(createAllocationDTO);
+        var allocationDTO = api.createAllocation(ConstantsTest.TEST_CLIENT_API_KEY, createAllocationDTO);
 
         var updateAllocationDTO = TestDataCreator
             .newUpdateAllocationDTO()
@@ -105,7 +111,7 @@ public class AllocationApiIntegrationTest extends BaseIntegrationTest {
             .startAt(allocationDTO.getStartAt().plusDays(1))
             .endAt(allocationDTO.getEndAt().plusDays(1));
 
-        api.updateAllocation(allocationDTO.getId(), updateAllocationDTO);
+        api.updateAllocation(ConstantsTest.TEST_CLIENT_API_KEY, allocationDTO.getId(), updateAllocationDTO);
 
         var updatedAllocation = allocationRepository.findById(allocationDTO.getId()).orElseThrow();
 
@@ -118,7 +124,7 @@ public class AllocationApiIntegrationTest extends BaseIntegrationTest {
     void testUpdateAllocationDoesNotExist() {
         assertThrows(
             HttpClientErrorException.NotFound.class,
-            () -> api.updateAllocation(1L, TestDataCreator.newUpdateAllocationDTO())
+            () -> api.updateAllocation(ConstantsTest.TEST_CLIENT_API_KEY, 1L, TestDataCreator.newUpdateAllocationDTO())
         );
     }
 
@@ -131,7 +137,12 @@ public class AllocationApiIntegrationTest extends BaseIntegrationTest {
 
         assertThrows(
             HttpClientErrorException.UnprocessableEntity.class,
-            () -> api.updateAllocation(allocation.getId(), TestDataCreator.newUpdateAllocationDTO().subject(null))
+            () ->
+                api.updateAllocation(
+                    ConstantsTest.TEST_CLIENT_API_KEY,
+                    allocation.getId(),
+                    TestDataCreator.newUpdateAllocationDTO().subject(null)
+                )
         );
     }
 }
