@@ -1,4 +1,4 @@
-package br.com.sw2you.realmeet.unit;
+package br.com.sw2you.realmeet.integration;
 
 import br.com.sw2you.realmeet.config.properties.EmailConfigProperties;
 import br.com.sw2you.realmeet.core.BaseIntegrationTest;
@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-public class EmailConfigPropertiesUnitTest extends BaseIntegrationTest {
+public class EmailConfigPropertiesIntegrationTest extends BaseIntegrationTest {
     @Autowired
     private EmailConfigProperties emailConfigProperties;
 

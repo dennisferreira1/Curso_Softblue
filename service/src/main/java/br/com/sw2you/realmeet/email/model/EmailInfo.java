@@ -106,7 +106,7 @@ public class EmailInfo {
         );
     }
 
-    public static EmailInfoBuilder newEmailInfo() {
+    public static EmailInfoBuilder newEmailInfoBuilder() {
         return new EmailInfoBuilder();
     }
 

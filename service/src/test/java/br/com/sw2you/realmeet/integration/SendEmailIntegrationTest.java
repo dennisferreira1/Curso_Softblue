@@ -34,7 +34,7 @@ public class SendEmailIntegrationTest extends BaseIntegrationTest {
     void testSendEmail() {
         Mockito.when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
         var emailInfo = EmailInfo
-            .newEmailInfo()
+            .newEmailInfoBuilder()
             .from(FROM_EMAIL_ADDRESS)
             .to(List.of(TO_EMAIL_ADDRESS))
             .subject(SUBJECT)
