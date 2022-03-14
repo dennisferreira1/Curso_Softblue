@@ -20,6 +20,7 @@
         <mockito-junit-jupiter.version>3.7.7</mockito-junit-jupiter.version>
         <prettier-maven-plugin.version>0.10</prettier-maven-plugin.version>
         <jasperreports.version>6.19.0</jasperreports.version>
+        <jasperreports-fonts.version>6.19.0</jasperreports-fonts.version>
     </properties>
 
     <dependencies>
@@ -77,6 +78,11 @@
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
             <version>${jasperreports.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-fonts</artifactId>
+            <version>${jasperreports-fonts.version}</version>
         </dependency>
 
         <!-- Test -->
