@@ -52,3 +52,10 @@ realmeet:
       allocationDeleted:
         subject: Agendamento de sala excluído
         templateName: allocation-deleted.html
+      allocationReport:
+        subject: Relatório de agendamentos de salas
+        templateName: allocation-report.html
+
+  reports:
+    allocationReport:
+      maxMonthsInterval: 6

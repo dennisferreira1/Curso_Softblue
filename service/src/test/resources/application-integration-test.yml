@@ -7,4 +7,6 @@ spring:
     url: jdbc:tc:mysql://localhost/realmeet
     username: admin
     password: admin
+  main:
+    allow-bean-definition-overriding: true
 

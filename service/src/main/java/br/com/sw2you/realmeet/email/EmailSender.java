@@ -28,8 +28,8 @@ public class EmailSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailSender.class);
 
-    private JavaMailSender javaMailSender;
-    private ITemplateEngine templateEngine;
+    private final JavaMailSender javaMailSender;
+    private final ITemplateEngine templateEngine;
 
     public EmailSender(JavaMailSender javaMailSender, ITemplateEngine templateEngine) {
         this.javaMailSender = javaMailSender;
@@ -65,7 +65,7 @@ public class EmailSender {
                 mimeMessage.addRecipients(Message.RecipientType.BCC, String.join(",", emailInfo.getBcc()));
             }
         } catch (MessagingException e) {
-            throwEmailSedingException(e, "Error adding data to MIME Message");
+            throwEmailSendingException(e, "Error adding data to MIME Message");
         }
     }
 
@@ -80,7 +80,7 @@ public class EmailSender {
             messageHtmlPart.setContent(templateEngine.process(template, context), TEXT_HTML_CHARSET_UTF_8);
             multipart.addBodyPart(messageHtmlPart);
         } catch (Exception e) {
-            throwEmailSedingException(e, "Error adding html to MIME Message");
+            throwEmailSendingException(e, "Error adding html to MIME Message");
         }
     }
 
@@ -96,7 +96,7 @@ public class EmailSender {
                         messageAttachmentPart.setFileName(a.getFileName());
                         multipart.addBodyPart(messageAttachmentPart);
                     } catch (MessagingException | IOException e) {
-                        throwEmailSedingException(e, "Error adding attachment to MIME Message");
+                        throwEmailSendingException(e, "Error adding attachment to MIME Message");
                     }
                 }
             );
@@ -107,11 +107,11 @@ public class EmailSender {
         try {
             mimeMessage.setContent(multipart);
         } catch (MessagingException e) {
-            throwEmailSedingException(e, "Error setting content to MIME Message");
+            throwEmailSendingException(e, "Error setting content to MIME Message");
         }
     }
 
-    private void throwEmailSedingException(Exception exception, String errorMessage) {
+    private void throwEmailSendingException(Exception exception, String errorMessage) {
         var fullErrorMessage = String.format("%s: %s", exception.getMessage(), errorMessage);
         LOGGER.info(fullErrorMessage);
         throw new EmailSendingException(fullErrorMessage, exception);

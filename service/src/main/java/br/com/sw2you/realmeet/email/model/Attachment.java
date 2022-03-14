@@ -59,7 +59,7 @@ public class Attachment {
         );
     }
 
-    public static AttachmentBuilder newAttachment() {
+    public static AttachmentBuilder newAttachmentBuilder() {
         return new AttachmentBuilder();
     }
 

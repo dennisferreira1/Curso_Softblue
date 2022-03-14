@@ -9,11 +9,11 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 @Component
-public class EmailInfoComponent {
+public class EmailInfoGenerator {
     EmailConfigProperties emailConfigProperties;
     TemplateConfigProperties templateConfigProperties;
 
-    public EmailInfoComponent(
+    public EmailInfoGenerator(
         EmailConfigProperties emailConfigProperties,
         TemplateConfigProperties templateConfigProperties
     ) {

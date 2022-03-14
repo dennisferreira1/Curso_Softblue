@@ -3,7 +3,9 @@ package br.com.sw2you.realmeet.validator;
 import br.com.sw2you.realmeet.exception.InvalidRequestException;
 import br.com.sw2you.realmeet.util.DateUtils;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.Period;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 
@@ -85,6 +87,15 @@ public final class ValidatorUtils {
         }
     }
 
+    public static void validateDatesOrdering(LocalDate dateFrom, LocalDate dateTo, ValidationErrors validationErrors) {
+        if (dateFrom.isAfter(dateTo)) {
+            validationErrors.add(
+                ValidatorConstants.DATE_FROM,
+                ValidatorConstants.DATE_FROM + ValidatorConstants.INCONSISTENT
+            );
+        }
+    }
+
     public static void validateDateInTheFuture(OffsetDateTime startAt, ValidationErrors validationErrors) {
         if (startAt.isBefore(DateUtils.now())) {
             validationErrors.add(
@@ -103,6 +114,20 @@ public final class ValidatorUtils {
             validationErrors.add(
                 ValidatorConstants.ALLOCATION_END_AT,
                 ValidatorConstants.ALLOCATION_END_AT + ValidatorConstants.EXCEEDS_MAX_DURATION
+            );
+        }
+    }
+
+    public static void validateDurationBetweenDates(
+        LocalDate dateFrom,
+        LocalDate dateTo,
+        int maxInterval,
+        ValidationErrors validationErrors
+    ) {
+        if (Period.between(dateFrom, dateTo).toTotalMonths() > maxInterval) {
+            validationErrors.add(
+                ValidatorConstants.DATE_TO,
+                ValidatorConstants.DATE_TO + ValidatorConstants.EXCEEDS_MAX_INTERVAL
             );
         }
     }
