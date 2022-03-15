@@ -25,6 +25,8 @@ spring:
       mail.smtp.port: 587
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
+  flyway:
+    locations: classpath:/db/migration/mysql
 
 # =================================
 # = Logging
